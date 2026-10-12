@@ -1,0 +1,52 @@
+import heapq
+
+def prims_algorithm(graph, start=0):
+    """
+    graph: adjacency list representation
+           graph[u] = [(weight, v), (weight, v2), ...]
+    start: starting vertex
+    """
+    visited = set()
+    mst = []
+    total_cost = 0
+
+    # Min-heap to pick the smallest edge
+    min_heap = [(0, start, -1)]  # (weight, current_node, parent)
+
+    while min_heap:
+        weight, u, parent = heapq.heappop(min_heap)
+        if u in visited:
+            continue
+        visited.add(u)
+
+        if parent != -1:  # skip the first dummy edge
+            mst.append((parent, u, weight))
+            total_cost += weight
+
+        for edge_weight, v in graph[u]:
+            if v not in visited:
+                heapq.heappush(min_heap, (edge_weight, v, u))
+
+    return mst, total_cost
+
+
+# Example input graph (Adjacency List)
+graph = {
+    0: [(2, 1), (4, 7)],
+    1: [(2, 0), (3, 2), (5, 7)],
+    2: [(3, 1), (6, 3), (7, 5)],
+    3: [(6, 2), (8, 4), (9, 5)],
+    4: [(8, 3), (10, 5), (11, 6)],
+    5: [(7, 2), (9, 3), (10, 4)],
+    6: [(11, 4)],
+    7: [(4, 0), (5, 1)]
+}
+
+# Run Prim's Algorithm
+mst, cost = prims_algorithm(graph, start=0)
+
+print("Minimum Spanning Tree edges:")
+for u, v, w in mst:
+    print(f"{u} -- {v} (weight {w})")
+
+print("Total cost of MST:", cost)
